@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos.Table;
+using Pluralsight.Todo.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,19 +12,62 @@ namespace Pluralsight.Todo.Repositories
         private CloudTable todoTable = null;
         public TodoRepository()
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=fekbergpluralsight-cosmos;AccountKey=O9mv1To3pgy23se1LKht8rFRGivCVAiAG5ThiCHPqCR0ZypnT2qVOGavEKPI6212iAoC8DbIF746SU5sFKxOLA==;TableEndpoint=https://fekbergpluralsight-cosmos.table.cosmos.azure.com:443/;");
+            // 05/16/2021 10:52 am - SSN - [20210516-1011] - [002] - M03-02 - Introducing Azure table storage in a .NET application
+
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(MvcApplication.ps312AzureTableConnectionString);
 
             var tableClient = storageAccount.CreateCloudTableClient();
 
             todoTable = tableClient.GetTableReference("Todo");
+
+
+            // todoTable.CreateIfNotExists();
+
         }
 
-        public IEnumerable<TodoEntity> All()
+
+        public IEnumerable<TodoEntity> All(EnumCompletionSelectionOption completionSelectionOption, bool IncludeOnlyVacationEntries)
         {
-            var query = new TableQuery<TodoEntity>()
-                .Where(TableQuery.GenerateFilterConditionForBool(nameof(TodoEntity.Completed),
-                QueryComparisons.Equal,
-                false));
+            var query = new TableQuery<TodoEntity>();
+
+            string completedFilter = null;
+
+            if (completionSelectionOption != EnumCompletionSelectionOption.Both)
+            {
+
+                completedFilter = TableQuery.GenerateFilterConditionForBool(nameof(TodoEntity.Completed),
+                                               QueryComparisons.Equal,
+                                               completionSelectionOption == EnumCompletionSelectionOption.Completed);
+
+            }
+
+            var isVacation = TableQuery.GenerateFilterCondition(nameof(TodoEntity.PartitionKey),
+                                        QueryComparisons.Equal, "Vacation");
+
+            if (IncludeOnlyVacationEntries && !string.IsNullOrWhiteSpace(completedFilter))
+            {
+
+                query = query.Where(TableQuery.CombineFilters(
+                    isVacation,
+                    TableOperators.And,
+                    completedFilter));
+
+            }
+            else if (IncludeOnlyVacationEntries)
+            {
+                query = query.Where(isVacation);
+
+            }
+            else if (!string.IsNullOrWhiteSpace(completedFilter))
+            {
+                query = query.Where(completedFilter);
+
+            }
+
+
+
+
+
 
             var entities = todoTable.ExecuteQuery(query);
 

@@ -10,12 +10,16 @@ namespace Pluralsight.Todo.Controllers
 {
     public class TodoController : Controller
     {
+
         // GET: Todo
-        public ActionResult Index()
-        {
+        public ActionResult Index(IndexPageModel model)
+        { 
+            if (model == null) model = new IndexPageModel();
+
             var repository = new TodoRepository();
-            var entities = repository.All();
-            var models = entities.Select(x => new TodoModel {
+            var entities = repository.All(model.CompletionSelectionOption, model.IncludeOnlyVacationEntries);
+            var models = entities.Select(x => new TodoModel
+            {
                 Id = x.RowKey,
                 Group = x.PartitionKey,
                 Content = x.Content,
@@ -23,7 +27,11 @@ namespace Pluralsight.Todo.Controllers
                 Completed = x.Completed,
                 Timestamp = x.Timestamp
             });
-            return View(models);
+
+            model.todoModel = models;
+
+            return View(model);
+
         }
 
         public ActionResult Create()
@@ -34,16 +42,24 @@ namespace Pluralsight.Todo.Controllers
         [HttpPost]
         public ActionResult Create(TodoModel model)
         {
-            var repository = new TodoRepository();
+            if (ModelState.IsValid)
+            {
 
-            repository.CreateOrUpdate(new TodoEntity {
-                PartitionKey = model.Group,
-                RowKey = Guid.NewGuid().ToString(),
-                Content = model.Content,
-                Due = model.Due
-            });
+                var repository = new TodoRepository();
 
-            return RedirectToAction("Index");
+                repository.CreateOrUpdate(new TodoEntity
+                {
+                    PartitionKey = model.Group,
+                    RowKey = Guid.NewGuid().ToString(),
+                    Content = model.Content,
+                    Due = model.Due
+                });
+
+                return RedirectToAction("Index");
+            }
+
+            return View(model);
+
         }
 
         public ActionResult ConfirmDelete(string id, string group)
@@ -91,15 +107,20 @@ namespace Pluralsight.Todo.Controllers
         [HttpPost]
         public ActionResult Edit(TodoModel model)
         {
-            var repository = new TodoRepository();
-            var item = repository.Get(model.Group, model.Id);
-            item.Completed = model.Completed;
-            item.Content = model.Content;
-            item.Due = model.Due;
+            if (ModelState.IsValid)
+            {
+                var repository = new TodoRepository();
+                var item = repository.Get(model.Group, model.Id);
+                item.Completed = model.Completed;
+                item.Content = model.Content;
+                item.Due = model.Due;
 
-            repository.CreateOrUpdate(item);
+                repository.CreateOrUpdate(item);
 
-            return RedirectToAction("Index");
+                return RedirectToAction("Index");
+            }
+            return View(model);
+
         }
     }
 }
