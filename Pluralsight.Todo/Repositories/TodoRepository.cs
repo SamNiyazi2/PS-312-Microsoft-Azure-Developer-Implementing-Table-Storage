@@ -103,5 +103,7 @@ namespace Pluralsight.Todo.Repositories
         public string Content { get; set; }
         public bool Completed { get; set; }
         public string Due { get; set; }
+
+        public DateTimeOffset? CompletedDate { get; set; }
     }
 }

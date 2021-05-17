@@ -13,11 +13,34 @@ namespace Pluralsight.Todo.Controllers
 
         // GET: Todo
         public ActionResult Index(IndexPageModel model)
-        { 
-            if (model == null) model = new IndexPageModel();
+        {
+            if (model == null)
+            {
+                model = new IndexPageModel();
+
+            }
+
+            if (model.todoModel == null)
+            {
+                if (!isSamePageCall(Request))
+                {
+
+                    if (this.Session["CompletionSelectionOption"] != null) model.CompletionSelectionOption = (EnumCompletionSelectionOption)this.Session["CompletionSelectionOption"];
+                    if (this.Session["IncludeOnlyVacationEntries"] != null) model.IncludeOnlyVacationEntries = (bool)this.Session["IncludeOnlyVacationEntries"];
+                }
+            }
+
 
             var repository = new TodoRepository();
+
+
+
             var entities = repository.All(model.CompletionSelectionOption, model.IncludeOnlyVacationEntries);
+
+            this.Session["CompletionSelectionOption"] = model.CompletionSelectionOption;
+            this.Session["IncludeOnlyVacationEntries"] = model.IncludeOnlyVacationEntries;
+
+
             var models = entities.Select(x => new TodoModel
             {
                 Id = x.RowKey,
@@ -25,6 +48,7 @@ namespace Pluralsight.Todo.Controllers
                 Content = x.Content,
                 Due = x.Due,
                 Completed = x.Completed,
+                CompletedDate = x.CompletedDate,
                 Timestamp = x.Timestamp
             });
 
@@ -111,9 +135,17 @@ namespace Pluralsight.Todo.Controllers
             {
                 var repository = new TodoRepository();
                 var item = repository.Get(model.Group, model.Id);
+
+
+                if (!item.Completed && model.Completed)
+                {
+                    item.CompletedDate = DateTime.Now;
+                }
+
                 item.Completed = model.Completed;
                 item.Content = model.Content;
                 item.Due = model.Due;
+
 
                 repository.CreateOrUpdate(item);
 
@@ -122,5 +154,21 @@ namespace Pluralsight.Todo.Controllers
             return View(model);
 
         }
+
+
+        bool isSamePageCall(HttpRequestBase request)
+        {
+            if (Request.UrlReferrer == null) return true;
+            var temp1 = Request.UrlReferrer.ToString().Split('/');
+            // var temp2 = Request.Url.ToString().Split('/');
+            //if (!isSamePageCall(Request))
+            if (temp1.Length < 4) return true;
+            if ( temp1[3]== "" ||  temp1[3].StartsWith("?")) return true;
+
+            return false;
+
+        }
+
+
     }
 }

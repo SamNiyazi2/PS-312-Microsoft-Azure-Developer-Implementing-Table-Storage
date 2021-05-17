@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -9,6 +10,8 @@ using System.Web.Mvc;
 
 // Add namespace where helpers to be used
 // @using Pluralsight.Todo.Helpers
+
+// ? @using System.Web.Mvc.Html;
 
 
 namespace Pluralsight.Todo.Helpers
@@ -24,7 +27,26 @@ namespace Pluralsight.Todo.Helpers
             return String.Format("*!*{0:MM/dd/yyyy hh:mm tt}", TimeZoneInfo.ConvertTime(_dateTime.Value, TimeZoneInfo.Local));
         }
 
-         
+        public static string DisplayForLocalTime_v2<TModel, TValue>(this HtmlHelper<TModel> helper, Expression<Func<TModel, TValue>> expression) 
+        {
+
+            // https://www.codeproject.com/tips/389747/custom-strongly-typed-htmlhelpers-in-asp-net-mvc
+            string name = ExpressionHelper.GetExpressionText(expression);
+            
+
+            ModelMetadata metaData = ModelMetadata.FromLambdaExpression(expression, helper.ViewData);
+
+ 
+
+            if (metaData.Model == null) return "";
+  
+            if (!DateTimeOffset.TryParse(metaData.Model.ToString(), out DateTimeOffset tempDateTimeOffset)) return "";
+
+            return String.Format("*!*{0:MM/dd/yyyy hh:mm tt}", TimeZoneInfo.ConvertTime(tempDateTimeOffset, TimeZoneInfo.Local));
+
+        }
+
+
 
         // http://blog.lekevin.com/technology/c-sharp/tips-extends-labelfor-or-displaynamefor-in-razor-mvc5-to-display-custom-label/
         //        public static MvcHtmlString DisplayNameFor_SSN<TModel, TValue>(this HtmlHelper<IEnumerable<TModel>> html, Expression<Func<TModel, TValue>> expression)
@@ -58,8 +80,15 @@ namespace Pluralsight.Todo.Helpers
                     DisplayNameAttribute dna = attr as DisplayNameAttribute;
                     displayName = dna.DisplayName;
                 }
+
+                if (attributeName == "DisplayAttribute")
+                {
+                    DisplayAttribute da = attr as DisplayAttribute;
+                    displayName = da.Name;
+                }
+
             }
-            
+
 
             return displayName;
 

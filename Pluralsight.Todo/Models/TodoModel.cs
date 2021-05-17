@@ -21,6 +21,11 @@ namespace Pluralsight.Todo.Models
         public string Due { get; set; }
 
         public bool Completed { get; set; }
+
+        [Display(Name ="Time Stamp")]
         public DateTimeOffset Timestamp { get; set; }
+
+        [DisplayName("Completed Date")]
+        public DateTimeOffset? CompletedDate { get; set; }
     }
 }
