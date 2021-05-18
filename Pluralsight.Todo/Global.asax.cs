@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -22,22 +23,54 @@ namespace Pluralsight.Todo
         public static string ps312AzureTableConnectionString_cosmboDBTable;
 
         public static string Application_Name = "PS-312 - Another Todo List";
-
+        
 
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
-            VaultDataAccess.CheckInAsync();
+
+
+            setup_Autofac();
+
 
 
             ps312AzureTableConnectionString_azureTable = Environment.GetEnvironmentVariable("ps312AzureTableConnectionString_azureTable");
             ps312AzureTableConnectionString_cosmboDBTable = Environment.GetEnvironmentVariable("ps312AzureTableConnectionString_cosmboDBTable");
 
+            processAzureVaultRequests().GetAwaiter().GetResult();
+
+        }
 
 
+        async Task processAzureVaultRequests()
+        {
 
+            //await VaultDataAccess.writeSecrets_Incomplete_But_Functional("ps312AzureTableConnectionString_azureTable", @"");
+            //await VaultDataAccess.writeSecrets_Incomplete_But_Functional("ps312AzureTableConnectionString_cosmboDBTable", @"");
+
+
+            //string p1 = await VaultDataAccess.getSecret("ps312AzureTableConnectionString-azureTable");
+            //string p2 = await VaultDataAccess.getSecret("ps312AzureTableConnectionString-cosmboDBTable");
+
+             
+            try
+            {
+                string tempValue  = await VaultDataAccess.getSecret("ssn-secret-test-pc-20210224"); 
+
+            }
+            catch (Exception ex)
+            {
+                 
+            }
+
+
+        }
+
+
+        void setup_Autofac()
+        {
 
             ContainerBuilder builder = new ContainerBuilder();
 
@@ -73,8 +106,6 @@ namespace Pluralsight.Todo
 
 
         }
-
- 
 
 
     }

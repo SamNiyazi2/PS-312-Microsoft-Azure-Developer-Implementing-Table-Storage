@@ -12,7 +12,7 @@
 
     ViewBag.Title = "Index";
 }
-
+ 
 <h2>Index</h2>
 <p>
     @{
@@ -26,7 +26,7 @@
     }
 
 <p>
-    
+
 
     @{
 
@@ -55,7 +55,7 @@
     }
 }
 
-<hr/>
+<hr />
 
 <p>
     @Html.ActionLink("Create New", "Create")
@@ -63,64 +63,74 @@
 
 
 
-
-<table class="table">
-    <tr>
-
-        <th>
-            @HtmlHelpersCustom.DisplayNameFor_SSN(Model.todoModel, "Group")
-        </th>
-
-        <th>
-            @HtmlHelpersCustom.DisplayNameFor_SSN(Model.todoModel, "Content")
-        </th>
-        <th>
-            @HtmlHelpersCustom.DisplayNameFor_SSN(Model.todoModel, "Due")
-        </th>
-        <th>
-            @HtmlHelpersCustom.DisplayNameFor_SSN(Model.todoModel, "Completed")
-        </th>
-        <th>
-            @HtmlHelpersCustom.DisplayNameFor_SSN(Model.todoModel, "CompletedDate")
-        </th>
-        <th>
-            @HtmlHelpersCustom.DisplayNameFor_SSN(Model.todoModel, "Timestamp")
-        </th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model.todoModel)
+@{
+    if (Model != null && Model.todoModel != null)
     {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Group)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Content)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Due)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Completed)
-            </td>
-            <td>
-                @Html.DisplayForLocalTime(item.CompletedDate)
-            </td>
-            <td>
-                @Html.DisplayForLocalTime(item.Timestamp)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.Id, group = item.Group }) |
-                @Html.ActionLink("Details", "Details", new { id = item.Id, group = item.Group }) |
-                @Html.ActionLink("Delete", "ConfirmDelete", new { id = item.Id, group = item.Group })
-            </td>
-        </tr>
+
+
+        <table class="table">
+            <tr>
+
+                <th>
+                    @HtmlHelpersCustom.DisplayNameFor_SSN(Model.todoModel, "Group")
+                </th>
+
+                <th>
+                    @HtmlHelpersCustom.DisplayNameFor_SSN(Model.todoModel, "Content")
+                </th>
+                <th>
+                    @HtmlHelpersCustom.DisplayNameFor_SSN(Model.todoModel, "Due")
+                </th>
+                <th>
+                    @HtmlHelpersCustom.DisplayNameFor_SSN(Model.todoModel, "Completed")
+                </th>
+                <th>
+                    @HtmlHelpersCustom.DisplayNameFor_SSN(Model.todoModel, "CompletedDate")
+                </th>
+                <th>
+                    @HtmlHelpersCustom.DisplayNameFor_SSN(Model.todoModel, "Timestamp")
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model.todoModel)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Group)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Content)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Due)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Completed)
+                    </td>
+                    <td>
+                        @Html.DisplayForLocalTime(item.CompletedDate)
+                    </td>
+                    <td>
+                        @Html.DisplayForLocalTime(item.Timestamp)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.Id, group = item.Group }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.Id, group = item.Group }) |
+                        @Html.ActionLink("Delete", "ConfirmDelete", new { id = item.Id, group = item.Group })
+                    </td>
+                </tr>
+            }
+
+        </table>
+
     }
 
-</table>
+}
+
 
 @{
+
     StringBuilder sb = new StringBuilder();
 
     sb.AppendLine("const validEntries = [];");

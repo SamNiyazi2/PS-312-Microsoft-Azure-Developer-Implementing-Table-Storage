@@ -33,6 +33,7 @@ namespace Pluralsight.Todo.Models
             this.azureTableOptions.Add(new AzureTableOption { OptionTitle = "Azure Storage Table", OptionValue = "Storage" });
             this.azureTableOptions.Add(new AzureTableOption { OptionTitle = "Azure CosmoDB Table", OptionValue = "CosmoDB" });
         }
+        
     }
 
 

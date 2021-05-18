@@ -52,7 +52,46 @@ namespace Pluralsight.Todo.Controllers
 
 
             repository.AzureTableTypes = model.AzureTableOptionSelected;
-            repository.DO_TodoRepository();
+
+
+
+
+
+
+
+
+
+
+            try
+            {
+
+                repository.DO_TodoRepository();
+            }
+            catch (Exception)
+            {
+
+                return View(model);
+
+                throw;
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+         //   repository.DO_TodoRepository();
 
 
             var entities = repository.All(model.CompletionSelectionOption, model.IncludeOnlyVacationEntries);
@@ -75,14 +114,18 @@ namespace Pluralsight.Todo.Controllers
 
             model.todoModel = models;
 
+
+
             return View(model);
 
         }
+
 
         public ActionResult Create()
         {
             return View();
         }
+
 
         [HttpPost]
         public ActionResult Create(TodoModel model)

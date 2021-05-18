@@ -13,7 +13,25 @@ namespace Pluralsight.Todo.Repositories
     public class TodoRepository : ITodoRepository
     {
         private CloudTable todoTable = null;
+
         public EnumAzureTableTypes AzureTableTypes { get; set; }
+
+
+        public TodoRepository()
+        {
+            if (HttpContext.Current != null && HttpContext.Current.Session != null)
+            {
+
+                if (HttpContext.Current.Session["AzureTableOptionSelected"] != null)
+                {
+                    AzureTableTypes = (EnumAzureTableTypes)HttpContext.Current.Session["AzureTableOptionSelected"];
+                    DO_TodoRepository();
+
+                }
+            }
+
+
+        }
 
 
         // public TodoRepository()
@@ -24,7 +42,7 @@ namespace Pluralsight.Todo.Repositories
             CloudStorageAccount storageAccount = null;
 
             // 05/16/2021 10:52 am - SSN - [20210516-1011] - [002] - M03-02 - Introducing Azure table storage in a .NET application
-             
+
 
             if (this.AzureTableTypes == EnumAzureTableTypes.AzureStorageTable)
             {
@@ -55,7 +73,7 @@ namespace Pluralsight.Todo.Repositories
 
 
         public IEnumerable<TodoEntity> All(EnumCompletionSelectionOption completionSelectionOption, bool IncludeOnlyVacationEntries)
-        { 
+        {
 
             var query = new TableQuery<TodoEntity>();
 
