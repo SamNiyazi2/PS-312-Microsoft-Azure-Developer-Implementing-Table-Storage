@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AzureKeyVault;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -19,6 +20,9 @@ namespace Pluralsight.Todo
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+
+            VaultDataAccess.CheckInAsync();
+
 
             ps312AzureTableConnectionString = Environment.GetEnvironmentVariable("ps312AzureTableConnectionString");
 
