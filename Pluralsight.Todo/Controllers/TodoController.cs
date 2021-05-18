@@ -11,6 +11,22 @@ namespace Pluralsight.Todo.Controllers
     public class TodoController : Controller
     {
 
+
+        ITodoRepository repository;// = new TodoRepository();
+
+
+
+        public TodoController(ITodoRepository _repository)
+        {
+
+
+            string test = "defaults";
+            //  repository = new TodoRepository(MvcApplication.ps312AzureTableConnectionString_azureTable);
+            repository = _repository;
+
+
+        }
+
         // GET: Todo
         public ActionResult Index(IndexPageModel model)
         {
@@ -27,18 +43,23 @@ namespace Pluralsight.Todo.Controllers
 
                     if (this.Session["CompletionSelectionOption"] != null) model.CompletionSelectionOption = (EnumCompletionSelectionOption)this.Session["CompletionSelectionOption"];
                     if (this.Session["IncludeOnlyVacationEntries"] != null) model.IncludeOnlyVacationEntries = (bool)this.Session["IncludeOnlyVacationEntries"];
+
+                    if (this.Session["AzureTableOptionSelected"] != null) model.AzureTableOptionSelected = (EnumAzureTableTypes)this.Session["AzureTableOptionSelected"];
+
                 }
+
             }
 
 
-            var repository = new TodoRepository();
-
+            repository.AzureTableTypes = model.AzureTableOptionSelected;
+            repository.DO_TodoRepository();
 
 
             var entities = repository.All(model.CompletionSelectionOption, model.IncludeOnlyVacationEntries);
 
             this.Session["CompletionSelectionOption"] = model.CompletionSelectionOption;
             this.Session["IncludeOnlyVacationEntries"] = model.IncludeOnlyVacationEntries;
+            this.Session["AzureTableOptionSelected"] = model.AzureTableOptionSelected;
 
 
             var models = entities.Select(x => new TodoModel
@@ -69,7 +90,7 @@ namespace Pluralsight.Todo.Controllers
             if (ModelState.IsValid)
             {
 
-                var repository = new TodoRepository();
+                ///var repository = new TodoRepository();
 
                 repository.CreateOrUpdate(new TodoEntity
                 {
@@ -88,7 +109,7 @@ namespace Pluralsight.Todo.Controllers
 
         public ActionResult ConfirmDelete(string id, string group)
         {
-            var repository = new TodoRepository();
+            ///var repository = new TodoRepository();
             var item = repository.Get(group, id);
 
             return View("Delete", new TodoModel
@@ -105,7 +126,7 @@ namespace Pluralsight.Todo.Controllers
         [HttpPost]
         public ActionResult Delete(string id, string group)
         {
-            var repository = new TodoRepository();
+            ///var repository = new TodoRepository();
             var item = repository.Get(group, id);
             repository.Delete(item);
 
@@ -114,7 +135,7 @@ namespace Pluralsight.Todo.Controllers
 
         public ActionResult Edit(string id, string group)
         {
-            var repository = new TodoRepository();
+            ///var repository = new TodoRepository();
             var item = repository.Get(group, id);
 
             return View(new TodoModel
@@ -133,7 +154,7 @@ namespace Pluralsight.Todo.Controllers
         {
             if (ModelState.IsValid)
             {
-                var repository = new TodoRepository();
+                ///var repository = new TodoRepository();
                 var item = repository.Get(model.Group, model.Id);
 
 
@@ -160,10 +181,8 @@ namespace Pluralsight.Todo.Controllers
         {
             if (Request.UrlReferrer == null) return true;
             var temp1 = Request.UrlReferrer.ToString().Split('/');
-            // var temp2 = Request.Url.ToString().Split('/');
-            //if (!isSamePageCall(Request))
             if (temp1.Length < 4) return true;
-            if ( temp1[3]== "" ||  temp1[3].StartsWith("?")) return true;
+            if (temp1[3] == "" || temp1[3].StartsWith("?")) return true;
 
             return false;
 

@@ -7,18 +7,46 @@ using System.Web;
 
 namespace Pluralsight.Todo.Repositories
 {
-    public class TodoRepository
+
+
+
+    public class TodoRepository : ITodoRepository
     {
         private CloudTable todoTable = null;
-        public TodoRepository()
+        public EnumAzureTableTypes AzureTableTypes { get; set; }
+
+
+        // public TodoRepository()
+        public void DO_TodoRepository()
         {
+
+
+            CloudStorageAccount storageAccount = null;
+
             // 05/16/2021 10:52 am - SSN - [20210516-1011] - [002] - M03-02 - Introducing Azure table storage in a .NET application
+             
 
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(MvcApplication.ps312AzureTableConnectionString);
+            if (this.AzureTableTypes == EnumAzureTableTypes.AzureStorageTable)
+            {
+                storageAccount = CloudStorageAccount.Parse(MvcApplication.ps312AzureTableConnectionString_azureTable);
+                // storageAccount = CloudStorageAccount.Parse(tableConnectionString);
+            }
 
-            var tableClient = storageAccount.CreateCloudTableClient();
+            if (this.AzureTableTypes == EnumAzureTableTypes.AzureCosmoDBTable)
+            {
+                storageAccount = CloudStorageAccount.Parse(MvcApplication.ps312AzureTableConnectionString_cosmboDBTable);                // storageAccount = CloudStorageAccount.Parse(tableConnectionString);
+            }
 
-            todoTable = tableClient.GetTableReference("Todo");
+
+            if (storageAccount != null)
+            {
+                var tableClient = storageAccount.CreateCloudTableClient();
+                todoTable = tableClient.GetTableReference("Todo");
+            }
+            else
+            {
+                todoTable = null;
+            }
 
 
             // todoTable.CreateIfNotExists();
@@ -27,7 +55,8 @@ namespace Pluralsight.Todo.Repositories
 
 
         public IEnumerable<TodoEntity> All(EnumCompletionSelectionOption completionSelectionOption, bool IncludeOnlyVacationEntries)
-        {
+        { 
+
             var query = new TableQuery<TodoEntity>();
 
             string completedFilter = null;

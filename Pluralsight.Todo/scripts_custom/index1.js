@@ -11,6 +11,13 @@ $("[name=IncludeOnlyVacationEntries]").change(e => {
     checkInteractiveOptions();
 });
 
+
+$("[name=AzureTableOptionSelected]").change(e => {
+
+    checkInteractiveOptions();
+});
+
+
 function checkInteractiveOptions() {
 
  
@@ -20,11 +27,23 @@ function checkInteractiveOptions() {
     const CompletionSelectionOption_selected = document.querySelectorAll("[name=CompletionSelectionOption]");
 
     CompletionSelectionOption_selected.forEach(obj1 => {
-        console.log(obj1)
+       
         if (obj1.checked) {
             url_Suffix.push("CompletionSelectionOption=" + obj1.value);
         }
     });
+
+
+    const AzureTableOptionSelected_selected = document.querySelectorAll("[name=AzureTableOptionSelected]");
+
+    AzureTableOptionSelected_selected.forEach(obj1 => {
+         
+        if (obj1.checked) {
+            url_Suffix.push("AzureTableOptionSelected=" + obj1.value);
+        }
+    });
+
+
 
     const IncludeOnlyVacationEntries_selected = document.querySelectorAll("[name=IncludeOnlyVacationEntries]");
 
@@ -57,6 +76,18 @@ function checkQuery() {
     queryOptions.forEach(e => {
 
         const keyValue = e.split('=');
+
+        
+        if (keyValue[0].toLowerCase() === "AzureTableOptionSelected".toLowerCase()) {
+
+            if (validAzureTables.find(e => e == keyValue[1])) {
+                url_Suffix.push(keyValue[0] + '=' + keyValue[1]);
+
+            } else {
+                haveBadOptions = true;
+            }
+        }
+
 
         if (keyValue[0].toLowerCase() === "CompletionSelectionOption".toLowerCase()) {
 

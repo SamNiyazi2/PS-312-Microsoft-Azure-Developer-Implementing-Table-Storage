@@ -10,6 +10,7 @@ namespace Pluralsight.Todo.Models
     public class IndexPageModel
     {
         public IEnumerable<TodoModel> todoModel { get; set; }
+        public IList<AzureTableOption> azureTableOptions { get; set; }
 
 
 
@@ -17,8 +18,27 @@ namespace Pluralsight.Todo.Models
 
 
         public bool IncludeOnlyVacationEntries { get; set; }
-        
+        public EnumAzureTableTypes AzureTableOptionSelected { get; set; }
 
+        //public bool UseAzure_Storage_Table { get; set; }
+        //public bool UseAzure_CosmoDB_Table { get; set; }
+
+
+
+        public IndexPageModel()
+        { 
+
+            azureTableOptions = new List<AzureTableOption>();
+
+            this.azureTableOptions.Add(new AzureTableOption { OptionTitle = "Azure Storage Table", OptionValue = "Storage" });
+            this.azureTableOptions.Add(new AzureTableOption { OptionTitle = "Azure CosmoDB Table", OptionValue = "CosmoDB" });
+        }
     }
 
+
+    public class AzureTableOption
+    {
+        public string OptionTitle { get; set; }
+        public string OptionValue { get; set; }
+    }
 }

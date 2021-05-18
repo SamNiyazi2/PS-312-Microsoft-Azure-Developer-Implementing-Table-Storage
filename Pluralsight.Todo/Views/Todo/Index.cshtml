@@ -5,6 +5,8 @@
 @using System.Web.Mvc.Html;
 
 @using Pluralsight.Todo.Helpers
+@using Pluralsight.Todo.Extensions;
+
 
 @{
 
@@ -12,14 +14,19 @@
 }
 
 <h2>Index</h2>
+<p>
+    @{
+        //foreach ( AzureTableOption option in Model.azureTableOptions)
 
+        foreach (var option in (EnumAzureTableTypes[])Enum.GetValues(typeof(EnumAzureTableTypes)))
+        {
+            @Html.RadioButtonFor(model => model.AzureTableOptionSelected, option) <span>&nbsp; @option.getDescription2() &nbsp; &nbsp; &nbsp;</span>
+        }
+
+    }
 
 <p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-
-<p>
-    Show: &nbsp;
+    
 
     @{
 
@@ -27,7 +34,7 @@
         foreach (var option in (EnumCompletionSelectionOption[])Enum.GetValues(typeof(EnumCompletionSelectionOption)))
         {
 
-            @Html.RadioButtonFor(model => Model.CompletionSelectionOption, option)<span>&nbsp;</span>@option <span>&nbsp; &nbsp; </span>
+            @Html.RadioButtonFor(model => Model.CompletionSelectionOption, option)<span>&nbsp;  @option  &nbsp; &nbsp; &nbsp; </span>
 
         }
 
@@ -39,7 +46,7 @@
 
     try
     {
-        <p>@Html.CheckBoxFor(model => model.IncludeOnlyVacationEntries) &nbsp; Show only "Vacation" entries</p>
+        <p>@Html.CheckBoxFor(model => model.IncludeOnlyVacationEntries) &nbsp;Show only "Vacation" entries</p>
 
     }
     catch (Exception e)
@@ -47,6 +54,14 @@
         Model.IncludeOnlyVacationEntries = false;
     }
 }
+
+<hr/>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+
+
 
 
 <table class="table">
@@ -76,41 +91,48 @@
 
     @foreach (var item in Model.todoModel)
     {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Group)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Content)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Due)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Completed)
-        </td>
-        <td>
-            @Html.DisplayForLocalTime(item.CompletedDate)
-        </td>
-        <td>
-            @Html.DisplayForLocalTime(item.Timestamp)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.Id, group = item.Group }) |
-            @Html.ActionLink("Details", "Details", new { id = item.Id, group = item.Group }) |
-            @Html.ActionLink("Delete", "ConfirmDelete", new { id = item.Id, group = item.Group })
-        </td>
-    </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Group)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Content)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Due)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Completed)
+            </td>
+            <td>
+                @Html.DisplayForLocalTime(item.CompletedDate)
+            </td>
+            <td>
+                @Html.DisplayForLocalTime(item.Timestamp)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id, group = item.Group }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id, group = item.Group }) |
+                @Html.ActionLink("Delete", "ConfirmDelete", new { id = item.Id, group = item.Group })
+            </td>
+        </tr>
     }
 
 </table>
 
 @{
     StringBuilder sb = new StringBuilder();
+
     sb.AppendLine("const validEntries = [];");
     foreach (var option in (EnumCompletionSelectionOption[])Enum.GetValues(typeof(EnumCompletionSelectionOption)))
     {
         sb.AppendLine(string.Format("validEntries.push('{0}');", @option));
+    }
+
+    sb.AppendLine("const validAzureTables = [];");
+    foreach (var option in (EnumAzureTableTypes[])Enum.GetValues(typeof(EnumAzureTableTypes)))
+    {
+        sb.AppendLine(string.Format("validAzureTables.push('{0}');", @option));
     }
 }
 
