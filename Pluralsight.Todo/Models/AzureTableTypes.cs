@@ -12,7 +12,7 @@ namespace Pluralsight.Todo.Models
         [Description("Azure Storage Table")]
         AzureStorageTable,
 
-        [Description("Azure CosmoBD Table")]
+        [Description("Azure CosmoDB Table")]
         AzureCosmoDBTable
     }
 
